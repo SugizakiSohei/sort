@@ -1,14 +1,41 @@
 #include <stdio.h>
 
-//フェルマー素数
+// フェルマー素数
 #define N ((1<<16)+1)
 
 int A[N];
 
 /*
-A[0], A[1], ..., A[n-1] をソートして昇順に書き換える関数
+A[0], A[1], ..., A[n-1] の中でk+1番目に小さい値を返す関数
+ただし、Aの中身は書き換えてしまう。
 */
-void quick_sort(int A[], int n){
+int quick_select(int A[], int n, int k){
+  int i, j, l,r,pivot;
+  l=0;
+
+// 先頭の要素をピボットとする
+  pivot = A[0];
+  for(i = j = 1; i < n; i++){
+    if(A[i] < pivot){
+      int z = A[j];
+      A[j] = A[i];
+      A[i] = z;
+      j++;
+    }
+  }
+  l=j;
+  for(i=n-1,r=n;0<i;i=i-1){
+    if(A[i]>pivot){
+        r=r-1;
+        int x = A[r];
+        A[r] = A[i] ;
+        A[i] = x ;
+    }
+}
+  j=r-1;
+  if(l == k+1) return pivot;
+  else if(l < k+1) return quick_select(A+r, n-r, k-l);
+  else return quick_select(A+1, l-1, k);
 }
 
 int main(){
@@ -21,8 +48,8 @@ int main(){
 
 // すべての要素が同じ場合でも計算が早く終わるか確認する
 
-  quick_sort(A, N);
   for(i=0;i<N;i++){
-    if(A[i] != i) printf("ERROR %dth element is %d\n", i, A[i]);
+    if(quick_select(A, N, i) != i) printf("ERROR %d %d\n", i, quick_select(A, N, i));
+//    printf("%d th element is %d\n", i, quick_select(A, N, i));
   }
 }
